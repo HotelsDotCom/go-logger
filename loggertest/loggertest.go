@@ -21,7 +21,7 @@ package loggertest
 import (
 	"bytes"
 	"io"
-	"stash.hcom/ssp/logger"
+	"github.com/HotelsDotCom/go-logger"
 	"strings"
 )
 

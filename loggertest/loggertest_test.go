@@ -18,7 +18,7 @@ package loggertest
 
 import (
 	"github.com/stretchr/testify/assert"
-	"stash.hcom/ssp/logger"
+	"github.com/HotelsDotCom/go-logger"
 	"testing"
 	"github.com/stretchr/testify/require"
 )
