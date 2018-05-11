@@ -23,23 +23,21 @@ import (
 	"testing"
 )
 
-var TestLogWriter = &bytes.Buffer{}
+var testLogWriter = &bytes.Buffer{}
 
 func beforeTest(logLevel string) {
-
-	LogLevel = logLevel
-	LogWriter = TestLogWriter
-	AfterFatal = func(string){}
-	InitLoggers()
+	SetLevel(logLevel)
+	SetOutput(testLogWriter)
+	SetExitFn(func() {})
 }
 
 func afterTest() {
-	TestLogWriter.Reset()
+	testLogWriter.Reset()
 }
 
 func TestLogger_DefaultLogLevel(t *testing.T) {
 
-	assert.Equal(t, "INFO", LogLevel)
+	assert.Equal(t, "INFO", std.logLevel.String())
 }
 
 func TestLogger_SettingDEBUGLogLevelEnablesDEBUG_INFO_ERROR_FATAL(t *testing.T) {
@@ -52,7 +50,7 @@ func TestLogger_SettingDEBUGLogLevelEnablesDEBUG_INFO_ERROR_FATAL(t *testing.T) 
 	Error("error message")
 	Fatal("fatal message")
 
-	logMessages := TestLogWriter.String()
+	logMessages := testLogWriter.String()
 	assert.Contains(t, logMessages, "debug message")
 	assert.Contains(t, logMessages, "info message")
 	assert.Contains(t, logMessages, "error message")
@@ -69,7 +67,7 @@ func TestLogger_SettingINFOLogLevelEnablesINFO_ERROR_FATAL(t *testing.T) {
 	Error("error message")
 	Fatal("fatal message")
 
-	logMessages := TestLogWriter.String()
+	logMessages := testLogWriter.String()
 	assert.NotContains(t, logMessages, "debug message")
 	assert.Contains(t, logMessages, "info message")
 	assert.Contains(t, logMessages, "error message")
@@ -86,7 +84,7 @@ func TestLogger_SettingERRORLogLevelEnablesERROR_FATAL(t *testing.T) {
 	Error("error message")
 	Fatal("fatal message")
 
-	logMessages := TestLogWriter.String()
+	logMessages := testLogWriter.String()
 	assert.NotContains(t, logMessages, "debug message")
 	assert.NotContains(t, logMessages, "info message")
 	assert.Contains(t, logMessages, "error message")
@@ -103,19 +101,11 @@ func TestLogger_SettingFATALogLevelEnablesOnly_FATAL(t *testing.T) {
 	Error("error message")
 	Fatal("fatal message")
 
-	logMessages := TestLogWriter.String()
+	logMessages := testLogWriter.String()
 	assert.NotContains(t, logMessages, "debug message")
 	assert.NotContains(t, logMessages, "info message")
 	assert.NotContains(t, logMessages, "error message")
 	assert.Contains(t, logMessages, "fatal message")
-}
-
-func TestLogger_SettingInvalidLogLevelDefaultsToINFO(t *testing.T) {
-
-	beforeTest("--- invalid log level ---")
-	defer afterTest()
-
-	assert.Equal(t, "INFO", LogLevel)
 }
 
 func TestLoggerMessageIsInCorrectFormat(t *testing.T) {
@@ -125,7 +115,7 @@ func TestLoggerMessageIsInCorrectFormat(t *testing.T) {
 
 	Debug("testing debug log message")
 
-	messageFormat := `\[%s\] [\d]{4}\/[\d]{2}\/[\d]{2} [\d]{2}:[\d]{2}:[\d]{2} logger_test\.go:[\d]{1,}: %s`
+	messageFormat := `\[%s\] [\d]{4}\/[\d]{2}\/[\d]{2} [\d]{2}:[\d]{2}:[\d]{2} main\.go:[\d]{1,}: %s`
 	expectedMessage := fmt.Sprintf(messageFormat, "DEBUG", "testing debug log message")
-	assert.Regexp(t, expectedMessage, TestLogWriter.String())
+	assert.Regexp(t, expectedMessage, testLogWriter.String())
 }

@@ -35,7 +35,7 @@ const (
 var (
 	prevLogLevel   string
 	prevWriter     io.Writer
-	prevAfterFatal func(string)
+	prevAfterFatal func()
 	logWriter      *bytes.Buffer
 )
 
@@ -43,16 +43,15 @@ var (
 // Logged messages can be inspected using GetLogMessages()
 func Init(logLevel string) {
 
-	prevLogLevel = logger.LogLevel
-	prevWriter = logger.LogWriter
-	prevAfterFatal = logger.AfterFatal
 	logWriter = &bytes.Buffer{}
 
-	logger.LogLevel = logLevel
-	logger.LogWriter = logWriter
-	logger.AfterFatal = func(msg string) { panic(msg) }
+	prevLogLevel = logger.GetLogLevel()
+	prevWriter = logger.GetOut()
+	prevAfterFatal = logger.GetExitFn()
+	logger.SetLevel(logLevel)
+	logger.SetOutput(logWriter)
+	logger.SetExitFn(func() { panic("Exiting") })
 
-	logger.InitLoggers()
 	ClearLogMessages()
 }
 
@@ -84,8 +83,7 @@ func ClearLogMessages() {
 func Reset() {
 
 	ClearLogMessages()
-	logger.LogLevel = prevLogLevel
-	logger.LogWriter = prevWriter
-	logger.AfterFatal = prevAfterFatal
-	logger.InitLoggers()
+	logger.SetLevel(prevLogLevel)
+	logger.SetOutput(prevWriter)
+	logger.SetExitFn(prevAfterFatal)
 }
