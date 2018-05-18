@@ -144,8 +144,8 @@ func getWriter() io.Writer {
 
 	logFile := getLogFile()
 	if logFile == "" {
-		log.Println("LOGFILE not set, logging to stdout only")
-		return os.Stdout
+		log.Println("LOGFILE not set, logging to stderr only")
+		return os.Stderr
 	}
 
 	log.Printf("log file set to: %s", logFile)
