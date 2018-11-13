@@ -59,3 +59,12 @@ func TestLogMessageStructIsPopulateFromLog(t *testing.T) {
 	assert.Equal(t, "DEBUG", logMessges[0].Level)
 	assert.Equal(t, "test debug message", logMessges[0].Message)
 }
+
+
+func TestDoesntPanicWhenThereareNoMessages(t *testing.T) {
+
+	Init(LogLevelDebug)
+	defer Reset()
+
+	assert.Empty(t, GetLogMessages())
+}
