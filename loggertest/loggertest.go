@@ -69,10 +69,12 @@ func GetLogMessages() []LogMessage {
 	for _, line := range strings.Split(logs, "\n") {
 
 		words := strings.SplitN(line, " ", 5)
-		level := strings.Trim(words[0], "[]")
+		if len(words) > 4 {
+			level := strings.Trim(words[0], "[]")
 
-		logMessage := LogMessage{RawMessage: line, Message: words[4], Level: level}
-		messages = append(messages, logMessage)
+			logMessage := LogMessage{RawMessage: line, Message: words[4], Level: level}
+			messages = append(messages, logMessage)
+		}
 	}
 	return messages
 }
